@@ -23,7 +23,7 @@ def ndarray2ras(output_filename, input_matrix, numExtraDigits, numDecimalPlaces,
     neurons per coefficient
     '''
     # start writing to file
-    with open('%s-target.ras'%output_filename, 'w') as f:
+    with open('%s.ras'%output_filename, 'w') as f:
         
         # compute number of neurons per group (or coefficient) for later
         nPerCoeff = 1 + (10 * (numExtraDigits+1)) + (10 * numDecimalPlaces)
@@ -59,13 +59,13 @@ def ndarray2ras(output_filename, input_matrix, numExtraDigits, numDecimalPlaces,
                     # compute the value of the digit from left to right
                     temp = (val % 10 ** i) // 10 ** (i-1)
                     #print('it found value ', temp, ' in the pre-radix')
-                    if (setStartNeuron + int(temp) == 155):
-                        print('found weird spot')
-                        print('row: ', row)
-                        print('coeff: ', coeff)
-                        print('i: ', i)
-                        print('setStartNeuron: ', setStartNeuron)
-                        print('temp: ', temp)
+                    #if (setStartNeuron + int(temp) == 155):
+                        #print('found weird spot')
+                        #print('row: ', row)
+                        #print('coeff: ', coeff)
+                        #print('i: ', i)
+                        #print('setStartNeuron: ', setStartNeuron)
+                        #print('temp: ', temp)
                     f.write('%f %i\n'%(dt*row, setStartNeuron + int(temp)))
 
                     # update the neuron marking the start of the set of 11 
@@ -81,13 +81,13 @@ def ndarray2ras(output_filename, input_matrix, numExtraDigits, numDecimalPlaces,
                     #print('operation 3: ', ((val * 10 ** (i+1)) % 10 ** (i+1)) % 10 ** 1)
                     #print('operation 4: ', temp)
                     #print('it found value ', temp, ' in the post-radix')
-                    if (setStartNeuron + int(temp) == 155):
-                        print('found weird spot')
-                        print('row: ', row)
-                        print('coeff: ', coeff)
-                        print('i: ', i)
-                        print('setStartNeuron: ', setStartNeuron)
-                        print('temp: ', temp)
+                    #if (setStartNeuron + int(temp) == 155):
+                        #print('found weird spot')
+                        #print('row: ', row)
+                        #print('coeff: ', coeff)
+                        #print('i: ', i)
+                        #print('setStartNeuron: ', setStartNeuron)
+                        #print('temp: ', temp)
                     f.write('%f %i\n'%(dt*row, setStartNeuron + int(temp)))
                     
                     # update the neuron marking the start of the set of 11 
@@ -103,7 +103,7 @@ def ras2ndarray(output_filename, input_ras, numCoeffs, numExtraDigits, numDecima
 
         # compute number of neurons per group (or coefficient) for later
         nPerCoeff = 1 + (10 * (numExtraDigits+1)) + (10 * numDecimalPlaces)
-        #print('number of neurons per coefficient: ', nPerCoeff)
+        print('number of neurons per coefficient: ', nPerCoeff)
                     
         # initialize the output array as 1's so you can flip the polarity
         # just means you have to subtract 1 from every coefficient at the end
@@ -149,7 +149,7 @@ def ras2ndarray(output_filename, input_ras, numCoeffs, numExtraDigits, numDecima
                 #print('current row val: ', row)
                 
                 # determine what coefficient you're working with
-                coeff = neuron // nPerCoeff
+                coeff = int(np.ceil(neuron / nPerCoeff) - 1)
                 #print('this neuron corresponds to a digit in coeff: ', coeff)
 
                 # update the reference coefficient flag, if necessary
@@ -192,10 +192,13 @@ def ras2ndarray(output_filename, input_ras, numCoeffs, numExtraDigits, numDecima
                         # update the coefficient at this time step
                         if (is_neg == False):
                             output[row, coeff] += ( (neuron % 10) * (10 ** (numExtraDigits - pos)) ) 
-                            print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** (numExtraDigits - pos)) ))
+                            #print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** (numExtraDigits - pos)) ))
+                            if time > 65877:
+                                print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** (numExtraDigits - pos)) ))
+                                
                         else:
                             output[row, coeff] -= ( (neuron % 10) * (10 ** (numExtraDigits - pos)) ) 
-                            print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** (numExtraDigits - pos)) ))
+                            #print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** (numExtraDigits - pos)) ))
 
                     # means it's a post-radix digit
                     else:
@@ -203,11 +206,12 @@ def ras2ndarray(output_filename, input_ras, numCoeffs, numExtraDigits, numDecima
                         # update the coefficient at this time step
                         if (is_neg == False):
                             output[row, coeff] += ( (neuron % 10) * (10 ** -(pos - numExtraDigits)) )
-                            print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** -(pos - numExtraDigits)) )) 
+                            #print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** -(pos - numExtraDigits)) )) 
                         else:
                             output[row, coeff] -= ( (neuron % 10) * (10 ** -(pos - numExtraDigits)) )
-                            print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** -(pos - numExtraDigits)) )) 
+                            #print('interpreted ', neuron, ' as: ', ( (neuron % 10) * (10 ** -(pos - numExtraDigits)) )) 
 
+        print(output[-10:,:])
         # now subtract the initial 1 from initializing it as a 1's array
         for step in range(numSteps):
             for c in range(numCoeffs):
@@ -217,8 +221,13 @@ def ras2ndarray(output_filename, input_ras, numCoeffs, numExtraDigits, numDecima
                     output[step,c] -= 1
                         
         
+        print(output[-10:,:])
         # print out vals, just for debugging
-        print(output)
+        #print(output)
+
+        # save and return output
+        np.save(output_filename + '.npy', output)
+        return output
                             
         
                 

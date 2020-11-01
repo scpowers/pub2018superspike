@@ -5,6 +5,7 @@ from helpers import *
 
 # import matrix of coefficients from a single trajectory
 data = np.load('simple_coeffs.npy')
+dt = 0.01
 
 # general approach: target_coeffs[i,j] = input_coeffs[i+1,j]
 # thus, you can't use all coefficients for the input data
@@ -20,7 +21,7 @@ numSteps = input_coeffs.shape[0]
 numCoeffs = input_coeffs.shape[1]
 
 # define how many decimal places you want
-numDeci = 3
+numDeci = 7
 
 # test that you selected the right data
 print('input at t=i\n', input_coeffs[23,:])
@@ -29,17 +30,17 @@ print('target at t=i-1 (should match input):\n', target_coeffs[22,:])
 
 
 # convert target values into a .ras file
-ndarray2ras('simpleHeat-target', target_coeffs, 0, numDeci, 0.001)
+ndarray2ras('simpleHeat-target', target_coeffs, 0, numDeci, dt)
 
 # convert the created .ras file into an ndarray to ensure no corruption 
 reconstructed_target = ras2ndarray('recon_simpleHeat_target', 'simpleHeat-target.ras', 
-        numCoeffs, 0, numDeci, numSteps, 0.001)
+        numCoeffs, 0, numDeci, numSteps, dt)
 print(np.amax(abs(reconstructed_target - target_coeffs)))
 
 # convert input values into a .ras file
-ndarray2ras('simpleHeat-input', input_coeffs, 0, numDeci, 0.001)
+ndarray2ras('simpleHeat-input', input_coeffs, 0, numDeci, dt)
 
 # convert the created .ras file into an ndarray to ensure no corruption 
 reconstructed_input = ras2ndarray('recon_simpleHeat_input', 'simpleHeat-input.ras', 
-        numCoeffs, 0, numDeci, numSteps, 0.001)
+        numCoeffs, 0, numDeci, numSteps, dt)
 print(np.amax(abs(reconstructed_input - input_coeffs)))

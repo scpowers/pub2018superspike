@@ -3,8 +3,9 @@
 import numpy as np
 from helpers import *
 
-# import matrix of coefficients from multiple trajectories
+# import matrix of coefficients from multiple trajectories (100)
 data = np.load('coeffs.npy')
+dt = 0.01
 
 # general approach: target_coeffs[i,j] = input_coeffs[i+1,j]
 # thus, you can't use all coefficients for the input data
@@ -19,24 +20,28 @@ print('Target matrix shape: ', target_coeffs.shape)
 numSteps = input_coeffs.shape[0]
 numCoeffs = input_coeffs.shape[1]
 
+# define how many decimal places you want
+numDeci = 7
+
 # test that you selected the right data
-print('input at t=i\n', input_coeffs[231,:])
-print('target at t=i\n', target_coeffs[231,:])
-print('target at t=i-1 (should match input):\n', target_coeffs[230,:])
+print('input at t=i\n', input_coeffs[23,:])
+print('target at t=i\n', target_coeffs[23,:])
+print('target at t=i-1 (should match input):\n', target_coeffs[22,:])
 
 
 # convert target values into a .ras file
-ndarray2ras('randHeat-target', target_coeffs, 0, 4, 0.001)
+ndarray2ras('randomHeat-target', target_coeffs, 0, numDeci, dt)
 
 # convert the created .ras file into an ndarray to ensure no corruption 
-reconstructed_target = ras2ndarray('recon_randHeat_target', 'randHeat-target.ras', numCoeffs, 0, 4, 
-        numSteps, 0.001)
+reconstructed_target = ras2ndarray('recon_randomHeat_target', 'randomHeat-target.ras', 
+        numCoeffs, 0, numDeci, numSteps, dt)
 print(np.amax(abs(reconstructed_target - target_coeffs)))
 
 # convert input values into a .ras file
-ndarray2ras('randHeat-input', input_coeffs, 0, 4, 0.001)
+ndarray2ras('randomHeat-input', input_coeffs, 0, numDeci, dt)
 
 # convert the created .ras file into an ndarray to ensure no corruption 
-reconstructed_input = ras2ndarray('recon_randHeat_input', 'randHeat-input.ras', numCoeffs, 0, 4, 
-        numSteps, 0.001)
+reconstructed_input = ras2ndarray('recon_randomHeat_input', 'randomHeat-input.ras', 
+        numCoeffs, 0, numDeci, numSteps, dt)
 print(np.amax(abs(reconstructed_input - input_coeffs)))
+

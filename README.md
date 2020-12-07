@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # pub2018superspike
 
 This repository contains example code to accompany our paper 
@@ -83,3 +84,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with the SuperSpike extension for Auryn.  
 If not, see <http://www.gnu.org/licenses/>.
+=======
+# AME 490: Directed Research
+
+This repository contains the code for my directed research project titled "Learning Evolution Operators of Partial Differential Equations with Spiking Neural Networks". It modifies the example code accompanying the following paper:
+
+Zenke, F., and Ganguli, S. (2018). SuperSpike: Supervised Learning in Multilayer Spiking Neural Networks. Neural Computation 30, 1514–1541.
+URL: https://www.mitpressjournals.org/doi/abs/10.1162/neco_a_01086
+
+The original code base from the authors can be found here: https://github.com/fzenke/pub2018superspike
+>>>>>>> 686aa1c5ebf877e5c0801c7a269ac0a47f24a0bd
